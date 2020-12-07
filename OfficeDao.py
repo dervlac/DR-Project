@@ -74,6 +74,38 @@ class OfficeDao:
             returnArray.append(resultAsDict)
         return returnArray
 
+    #add inner join for costing
+    def findById(self, staffID):
+        cursor = self.db.cursor()
+        sql = 'select * from staff where staffID = %s'
+        values = [ staffID ]
+        cursor.execute(sql, values)
+        result = cursor.fetchone()
+        return self.convertToDict(result)
+
+    def update(self, staff):
+       cursor = self.db.cursor()
+       sql = "update staff set name = %s, role = %s, expertise = %s, availability = %s where staffID = %s"
+       values = [
+           staff['name'],
+           staff['role'],
+           staff['expertise'],
+           staff['availability'],
+           staff['staffID']
+
+       ]
+       cursor.execute(sql, values)
+       self.db.commit()
+       return staff
+
+    def delete(self, staffID):
+       cursor = self.db.cursor()
+       sql = 'delete from staff where staffID = %s'
+       values = [staffID]
+       cursor.execute(sql, values)
+       
+       return {}
+
 officeDao = OfficeDao()
 
 
