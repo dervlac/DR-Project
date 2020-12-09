@@ -7,7 +7,8 @@ class OfficeDao:
         self.db = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='',
+            #password in mysql will be gmit student number
+            password='G00283361',
             database='datarepresentation'
         )
     
@@ -43,9 +44,10 @@ class OfficeDao:
                 output[colName] = value
         return output
 
+
     def getAll(self):
         cursor = self.db.cursor()
-        sql = "select * from staff"
+        sql = "SELECT * FROM staff"
         cursor.execute(sql)
         results = cursor.fetchall()
         returnArray = []

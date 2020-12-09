@@ -55,17 +55,17 @@ staff5 = {
     'availability':12
 }
 
-#officeDao.createCosting(cost1)
-#officeDao.createCosting(cost2)
-#officeDao.createCosting(cost3)
-#officeDao.createCosting(cost4)
+officeDao.createCosting(cost1)
+officeDao.createCosting(cost2)
+officeDao.createCosting(cost3)
+officeDao.createCosting(cost4)
 
-#officeDao.createStaff(staff1)
-#officeDao.createStaff(staff2)
-#officeDao.createStaff(staff3)
-#officeDao.createStaff(staff4)
-#officeDao.createStaff(staff5)
+officeDao.createStaff(staff1)
+officeDao.createStaff(staff2)
+officeDao.createStaff(staff3)
+officeDao.createStaff(staff4)
+officeDao.createStaff(staff5)
 
 
 returnvalue = officeDao.getAll()
-print(returnvalue)
+#print(returnvalue)

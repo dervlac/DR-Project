@@ -1,0 +1,240 @@
+<html>
+    <head>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+            
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+                integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    </head>
+    <body>
+        <div id="create-update" style="display:none">
+            <h2>Create-Edit</h2>
+            <table id="createUpdateForm">
+                <tr>
+                    <td>staffID</td>
+                    <td><input type="text" name="staffID" id="idInput"></td>
+                </tr>
+                <tr>
+                    <td>name</td>
+                    <td><input type="text" name="name"></td>
+                </tr>
+                <tr>
+                    <td>role</td>
+                    <td><input type="text" name="role"></td>
+                </tr>
+                <tr>    
+                    <td>expertise</td>
+                    <td><input type="text" name="expertise"></td>
+                </tr>
+				<tr>    
+                    <td>availability</td>
+                    <td><input type="number" name="availability"></td>
+                </tr>
+                <tr>
+                    <td></td><td>
+                        <button id="create-button" onclick="doCreate()">Create</button>     
+                        <button id="update-button" onclick="doUpdate()">Update</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="display">
+            <h2>Staff</h2>
+            <button onClick="showCreate()">Create</button>
+            <table id="staffTable" class="table">
+                <tr>
+                    <th>staffID</th><th>name</th><th>role</th><th>expertise</th><th>availability</th><th></th>
+                </tr>
+                
+            </table>
+
+        </div>
+
+        <script>
+            function showCreate(){
+                document.getElementById('display').style.display = "none"
+                document.getElementById('update-button').style.display = "none"
+                document.getElementById('create-button').style.display = "block"
+                document.getElementById('create-update').style.display = "block"
+
+            }
+            function showUpdate(thisElem){
+                var rowElement = thisElem.parentNode.parentNode;
+                staff = readStaffFromRow(rowElement)
+                populateForm(staff)
+
+                document.getElementById('display').style.display = "none"
+                document.getElementById('update-button').style.display = "block"
+                document.getElementById('create-button').style.display = "none"
+                document.getElementById('create-update').style.display = "block"
+
+            }
+            function readStaffFromRow(rowElement){
+                staff = {}
+                staff.staffID = rowElement.getAttribute("id");
+                staff.name = rowElement.cells[1].firstChild.textContent
+                staff.role = rowElement.cells[2].firstChild.textContent
+                staff.expertise = rowElement.cells[3].firstChild.textContent
+				staff.availability = rowElement.cells[4].firstChild.textContent
+
+                return staff
+                
+            }
+            function populateForm(staff){
+                var form = document.getElementById('createUpdateForm')
+
+                
+                form.querySelector('input[name="staffID"]').value = staff.staffID
+                form.querySelector('input[name="staffID"]').disabled=true
+                
+                form.querySelector('input[name="name"]').value = staff.name
+                form.querySelector('input[name="role"]').value = staff.role
+                form.querySelector('input[name="expertise"]').value = staff.expertise
+				form.querySelector('input[name="availability"]').value = staff.availability
+            }
+            function clearForm() {
+                    var form = document.getElementById('createUpdateForm')
+
+
+                    form.querySelector('input[name="staffID"]').value = ''
+                    form.querySelector('input[name="staffID"]').disabled = false
+
+                    form.querySelector('input[name="name"]').value = ''
+                    form.querySelector('input[name="role"]').value = ''
+                    form.querySelector('input[name="expertise"]').value = ''
+					form.querySelector('input[name="availability"]').value = ''
+                }
+
+            function doCreate(){
+                console.log("in doCreate")
+                staff= getStaffFromForm()
+                console.log(staff)
+                $.ajax({
+                    url:"/staff",
+                    data:JSON.stringify(staff),
+                    method:"POST",
+                    dataType:"JSON",
+                    contentType: "application/json; charset=utf-8",
+                    success:function(result){
+                        console.log(result) 
+                        addStaffToTable(staff)
+                        showDisplay()
+                        clearForm()
+
+                    },
+                    error:function(xhr,status,error){
+                        console.log("error"+error)
+                    }
+                })
+               
+            }
+            function doUpdate(){
+                staff = getStaffFromForm()
+                updateServer(staff)
+                
+            }
+            function updateServer(staff){
+               $.ajax({
+                    url: "/staff/"+staff.staffID,
+                    data: JSON.stringify(staff),
+                    method: "PUT",
+                    dataType: "JSON",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (result) {
+                        console.log(result)
+                        updateTableRow(staff)
+                        showDisplay()
+                        clearForm()
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("error" + error)
+                    }
+                })
+            }
+            function doDelete(thisElem){
+                var tableElement = document.getElementById('staffTable');
+                var rowElement = thisElem.parentNode.parentNode;
+                var index = rowElement.rowIndex;
+                staffID = rowElement.getAttribute("id");
+                $.ajax({
+                    url:"/staff/"+staffID,
+                    method:"DELETE",
+                    dateType:"JSON",
+                    success:function(result){
+                        tableElement.deleteRow(index);
+                    },
+                    error:function(xhr,status,error){
+                        console.log(error)
+                    }
+                })
+                
+            }
+            function updateTableRow(staff){
+                rowElement = document.getElementById(staff.staffID)
+                rowElement.cells[1].firstChild.textContent = staff.name
+                rowElement.cells[2].firstChild.textContent = staff.role
+                rowElement.cells[3].firstChild.textContent = staff.expertise
+				rowElement.cells[4].firstChild.textContent = staff.availability
+                //console.log("updating table")
+            }
+            function getStaffFromForm(){
+                var form = document.getElementById('createUpdateForm')
+
+                var staff = {}
+                staff.staffID = form.querySelector('input[name="staffID"]').value
+                staff.name = form.querySelector('input[name="name"]').value
+                staff.role = form.querySelector('input[name="role"]').value
+                staff.expertise = form.querySelector('input[name="expertise"]').value
+				staff.availability = form.querySelector('input[name="availability"]').value
+                //console.log(staff)
+                 return staff
+            }
+             function showDisplay() {
+                    document.getElementById('display').style.display = "block"
+                    document.getElementById('create-update').style.display = "none"
+
+                }
+
+            function populateTable(){
+                //ajax getAll
+               $.ajax({
+                   url:'http://127.0.0.1:5000/staff',
+                   method:'GET',
+                   datatype:'JSON',
+                   success:function(results){
+                        for (staff of results){
+                             addStaffToTable(staff)
+                        }
+                   },
+                   error:function (xhr,status,error){
+                       console.log ("error "+error +" code:"+status)
+                   }
+
+               })
+               
+            }
+            function addStaffToTable(staff){
+                //console.log("working so far")
+                tableElem = document.getElementById("staffTable")
+                rowElem = tableElem.insertRow(-1)
+                rowElem.setAttribute("id", staff.staffID)
+                cell1 = rowElem.insertCell(0)
+                cell1.innerHTML = staff.staffID
+                cell2 = rowElem.insertCell(1)
+                cell2.innerHTML = staff.name
+                cell3 = rowElem.insertCell(2)
+                cell3.innerHTML = staff.role
+                cell4 = rowElem.insertCell(3)
+                cell4.innerHTML = staff.expertise
+				cell5 = rowElem.insertCell(4)
+                cell5.innerHTML = staff.availability
+                cell6 = rowElem.insertCell(5)
+                cell6.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+                cell7 = rowElem.insertCell(6)
+                cell7.innerHTML = '<button onclick="doDelete(this)">Delete</button>'
+                 }
+            populateTable()
+        </script>
+    </body>
+</html>
