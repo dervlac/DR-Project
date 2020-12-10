@@ -35,6 +35,14 @@ class OfficeDao:
         cursor.execute(sql,values)
         self.db.commit()
 
+    def findByRole(self,role):
+        cursor=self.db.cursor()
+        sql='select * from costing where role = %s'
+        value = [str(role)]
+        cursor.execute(sql,value)
+        result = cursor.fetchone()
+        return self.convertToDictCosting(result)
+
     def convertToDict(self, result):
         colnames = ['staffID','name','role','expertise','availability']
         output={}

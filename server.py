@@ -19,6 +19,10 @@ def getAll():
 def getAllCosting():
     return jsonify(officeDao.getAllCosting())
 
+@app.route('/costing/<role>')
+def findByRole(role):
+    return jsonify(officeDao.findByRole(role))
+
 @app.route('/staff/<int:staffID>')
 def findById(staffID):
     return jsonify(officeDao.findById(staffID))

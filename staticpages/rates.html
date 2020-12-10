@@ -13,16 +13,20 @@
                 <tr>
                     <td>Role</td>
                     // change this to dropdown
-                    <td><input type="text" name="role" id="idInput"></td>
+                    <td><select name="role" id="selected-role">
+                        <option value="Analyst">Analyst</option>
+                        <option value="Senior Analyst">Senior Analyst</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Director">Director</option>
+                      </select></td>
                 </tr>
                 <tr>
-                    <td>Number of hours</td>
-                    <td><input type="number" name="hourlyRate"></td>
+                    <td>Hours</td>
+                    <td><input type="number" name="hours"></td>
                 </tr>
                 <tr>
-                    <td></td><td>
-                        // update these buttons to calculations of costs?     
-                        <button id="update-button" onclick="doCalculate()">Calculate</button>
+                    <td></td><td>     
+                        <button id="calculate-button" onclick="getRate()">Calculate</button>
                     </td>
                 </tr>
             </table>
@@ -30,55 +34,59 @@
 
         <div id="display">
             <h2>Staff Rates</h2>
+            <button onClick="showCalculate()">Calculate</button>
             <br>
             <table id="costingTable" class="table">
                 <tr>
-                    <th>Role</th><th>Rate</th><th></th>
+                    <th>Role</th><th>Rate</th>
                 </tr>    
             </table>
         </div> 
 
+        <div id="calculated-cost"><p></p></div>
+
         <script>
-            function showCreate(){
+            function showCalculate(){
                 document.getElementById('display').style.display = "none"
-                document.getElementById('update-button').style.display = "none"
-                document.getElementById('create-button').style.display = "block"
+                document.getElementById('calculate-button').style.display = "block"
                 document.getElementById('create-update').style.display = "block"
-
-            }
-
-            function showUpdate(thisElem){
-                var rowElement = thisElem.parentNode.parentNode;
-                staff = readStaffFromRow(rowElement)
-                populateForm(staff)
-                document.getElementById('display').style.display = "none"
-                document.getElementById('update-button').style.display = "block"
-                document.getElementById('create-button').style.display = "none"
-                document.getElementById('create-update').style.display = "block"
-            }
-
-            function readStaffFromRow(rowElement){
-                staff = {}
-                staff.staffID = rowElement.getAttribute("id");
-                staff.name = rowElement.cells[1].firstChild.textContent
-                staff.role = rowElement.cells[2].firstChild.textContent
-                staff.expertise = rowElement.cells[3].firstChild.textContent
-				staff.availability = rowElement.cells[4].firstChild.textContent
-                return staff     
-            }
-
-            function populateForm(staff){
-                var form = document.getElementById('createUpdateForm')
-                form.querySelector('input[name="staffID"]').value = staff.staffID
-                form.querySelector('input[name="staffID"]').disabled=true
-                form.querySelector('input[name="name"]').value = staff.name
-                form.querySelector('input[name="role"]').value = staff.role
-                form.querySelector('input[name="expertise"]').value = staff.expertise
-				form.querySelector('input[name="availability"]').value = staff.availability
             }
              
-            function doCalculate(){
-                        //use this to calculate costs
+            function doCalculate(rate){
+                        var cost = getRateFromForm();
+                        var total = cost.hours * result;
+                        console.log(cost.hours)
+                        console.log(result)
+                        console.log(total)
+                        document.getElementById("calculated-cost").innerHTML = "The cost would be " + total;
+            }
+            function getRate(){
+                //console.log("in doCreate")
+                cost = getRateFromForm()
+                console.log(cost)
+                $.ajax({
+                    url:"/costing/"+cost.role,
+                    method:"GET",
+                    dataType:"JSON",
+                    success:function(results){
+                        result = Number(results.rate)
+                        doCalculate(result)
+                   },
+                   error:function (xhr,status,error){
+                       console.log ("error "+error +" code:"+status)
+                   }
+                })
+               
+            }
+
+            function getRateFromForm(){
+                var form = document.getElementById('createUpdateForm')
+
+                var cost = {}
+                cost.role = document.getElementById("selected-role").value
+                cost.hours = Number(form.querySelector('input[name="hours"]').value)
+                console.log(cost)
+                return cost
             }
 
             function populateTable(){
@@ -107,8 +115,6 @@
                 cell1.innerHTML = costing.role
                 cell2 = rowElem.insertCell(1)
                 cell2.innerHTML = costing.rate
-                cell3 = rowElem.insertCell(2)
-                cell3.innerHTML = '<button onclick="showUpdate(this)">Calculate</button>'
             }
 
             populateTable()
