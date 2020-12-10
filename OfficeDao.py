@@ -21,7 +21,7 @@ class OfficeDao:
         return db
 
     def __init__(self):
-        db=self.ConnectToDB() 
+        db=self.connectToDB() 
         db.close()
     
     def createStaff(self,staff):
