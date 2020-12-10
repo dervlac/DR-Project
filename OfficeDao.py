@@ -1,15 +1,15 @@
 import mysql.connector
 from mysql.connector import cursor
+import dbconfig as cfg
 
 class OfficeDao:
     db=''
     def __init__(self):
         self.db = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            #password in mysql will be gmit student number
-            password='G00283361',
-            database='datarepresentation'
+            host=cfg.mysql['host'],
+            user=cfg.mysql['username'],
+            password=cfg.mysql['password'],
+            database=cfg.mysql['database']
         )
     
     def createStaff(self,staff):
