@@ -45,6 +45,9 @@
         <div id="calculated-cost"><p></p></div>
 
         <script>
+
+            host=window.location.origin
+
             function showCalculate(){
                 document.getElementById('display').style.display = "none"
                 document.getElementById('calculate-button').style.display = "block"
@@ -64,7 +67,7 @@
                 cost = getRateFromForm()
                 console.log(cost)
                 $.ajax({
-                    url:"/costing/"+cost.role,
+                    url: host+"/costing/"+cost.role,
                     method:"GET",
                     dataType:"JSON",
                     success:function(results){
@@ -91,7 +94,7 @@
             function populateTable(){
                 //ajax getAll
                $.ajax({
-                   url:'http://127.0.0.1:5000/costing',
+                   url:host+'/costing',
                    method:'GET',
                    datatype:'JSON',
                    success:function(results){
