@@ -4,12 +4,8 @@ from OfficeDao import officeDao
 app = Flask(__name__,static_url_path = '',static_folder = 'staticpages')
 
 @app.route('/')
-def index():
-    return "Hello World!"
-
-@app.route('/login')
-def login():
-    return "This page will be the login page"
+def home():
+    return app.send_static_file('index.html')
 
 @app.route('/staff')
 def getAll():
