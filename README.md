@@ -46,7 +46,11 @@ If 500 internal server errors arise when visiting the webpage, please reach out 
 
 ## Initiation
 
-To initiate a local instance of this web application, just run the file ```server.py``` and visit the root page.
+Please use the ```dbconfigtemplate.py``` file to create your own version of dbconfig.py with the appropriate username and password.
+
+I have supplied two sql files which can be used to create the database tables needed to execute the code, and ```tesOfficeDao.py``` contains sample json variables to allow you to create the initial values in the database. The 4 entries in the costing table are mandatory, but staff entries are customisable by the user, provided the roles are found in the costing table.
+
+Then, to initiate a local instance of this web application, just run the file ```server.py``` and visit the root page.
 
 Enjoy!
 
