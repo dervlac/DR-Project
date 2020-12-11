@@ -1,14 +1,37 @@
 <html>
     <head>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-            
+            <style>a {
+                padding: 1em 1.5em;
+                text-transform: uppercase;
+                margin-top:10px;
+                margin-bottom:10px;
+                margin-right:15px; 
+                margin-left:8px;
+              }
+              button{
+                padding: 0.5em 0.5em;
+              }
+            </style>
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
                 integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     </head>
     <body>
+        <div align="middle">
+            <a href="index.html">Home</a>
+            <a href="resources.html">Resources</a>
+            <a href="rates.html">Rates</a>
+        </div>
         <div id="create-update" style="display:none">
-            <h2>Create-Edit</h2>
+            <h2 id="update-header">Update Availability of a Booked Resource</h2>
+            <h2 id="create-header">Create a New Resource</h2>
+            <h2 id="promote-header">Promote a Resource</h2>
+            <br>
+            <h6 id="update-byline">Please reduce the availability value below by the number of hours for which the resource has been booked</h6>
+            <h6 id="create-byline">Insert details of new resource</h6>
+            <h6 id="promote-byline">Please select the new role for this resource</h6>
+            <br>
             <table id="createUpdateForm">
                 <tr>
                     <td>staffID</td>
@@ -20,7 +43,12 @@
                 </tr>
                 <tr>
                     <td>role</td>
-                    <td><input type="text" name="role"></td>
+                    <td><select name="role" id="selected-role">
+                        <option value="Analyst">Analyst</option>
+                        <option value="Senior Analyst">Senior Analyst</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Director">Director</option>
+                      </select></td>
                 </tr>
                 <tr>    
                     <td>expertise</td>
@@ -34,16 +62,23 @@
                     <td></td><td>
                         <button id="create-button" onclick="doCreate()">Create</button>     
                         <button id="update-button" onclick="doUpdate()">Update</button>
+                        <button id="promote-button" onclick="doUpdate()">Promote</button>
                     </td>
                 </tr>
             </table>
         </div>
         <div id="display">
-            <h2>Staff</h2>
-            <button onClick="showCreate()">Create</button>
+            <h2>Resource Availability</h2>
+            <br>
+            <h4>Want to add to the team?</h4>
+            <br>
+            <button onClick="showCreate()">Create Resource</button>
+            <br>
+            <h6>Use the buttons below to book, delete or promote a resource!</h6>
+            <br>
             <table id="staffTable" class="table">
                 <tr>
-                    <th>staffID</th><th>name</th><th>role</th><th>expertise</th><th>availability</th><th></th>
+                    <th>staffID</th><th>name</th><th>role</th><th>expertise</th><th>availability</th><th></th><th></th><th></th>
                 </tr>
                 
             </table>
@@ -59,20 +94,54 @@
                 document.getElementById('display').style.display = "none"
                 document.getElementById('update-button').style.display = "none"
                 document.getElementById('create-button').style.display = "block"
+                document.getElementById('promote-button').style.display = "block"
+                document.getElementById('update-header').style.display = "none"
+                document.getElementById('create-header').style.display = "block"
+                document.getElementById('promote-header').style.display = "block"
+                document.getElementById('update-byline').style.display = "none"
+                document.getElementById('create-byline').style.display = "block"
+                document.getElementById('promote-byline').style.display = "block"
                 document.getElementById('create-update').style.display = "block"
 
             }
             function showUpdate(thisElem){
                 var rowElement = thisElem.parentNode.parentNode;
                 staff = readStaffFromRow(rowElement)
-                populateForm(staff)
+                populateFormForBooking(staff)
 
                 document.getElementById('display').style.display = "none"
                 document.getElementById('update-button').style.display = "block"
                 document.getElementById('create-button').style.display = "none"
+                document.getElementById('promote-button').style.display = "none"
+                document.getElementById('update-header').style.display = "block"
+                document.getElementById('create-header').style.display = "none"
+                document.getElementById('promote-header').style.display = "none"
+                document.getElementById('update-byline').style.display = "block"
+                document.getElementById('create-byline').style.display = "none"
+                document.getElementById('promote-byline').style.display = "none"
                 document.getElementById('create-update').style.display = "block"
 
             }
+            
+            function showPromote(thisElem){
+                var rowElement = thisElem.parentNode.parentNode;
+                staff = readStaffFromRow(rowElement)
+                populateFormForPromote(staff)
+
+                document.getElementById('display').style.display = "none"
+                document.getElementById('promote-button').style.display = "block"
+                document.getElementById('update-button').style.display = "none"
+                document.getElementById('create-button').style.display = "none"
+                document.getElementById('promote-header').style.display = "block"
+                document.getElementById('update-header').style.display = "none"
+                document.getElementById('create-header').style.display = "none"
+                document.getElementById('promote-byline').style.display = "block"
+                document.getElementById('update-byline').style.display = "none"
+                document.getElementById('create-byline').style.display = "none"
+                document.getElementById('create-update').style.display = "block"
+
+            }
+
             function readStaffFromRow(rowElement){
                 staff = {}
                 staff.staffID = rowElement.getAttribute("id");
@@ -84,18 +153,34 @@
                 return staff
                 
             }
-            function populateForm(staff){
+            function populateFormForBooking(staff){
                 var form = document.getElementById('createUpdateForm')
 
                 
                 form.querySelector('input[name="staffID"]').value = staff.staffID
                 form.querySelector('input[name="staffID"]').disabled=true
-                
                 form.querySelector('input[name="name"]').value = staff.name
-                form.querySelector('input[name="role"]').value = staff.role
+                form.querySelector('input[name="name"]').disabled=true
+                form.querySelector('select[name="role"]').value = staff.role
+                form.querySelector('select[name="role"]').disabled=true
                 form.querySelector('input[name="expertise"]').value = staff.expertise
+                form.querySelector('input[name="expertise"]').disabled=true
 				form.querySelector('input[name="availability"]').value = staff.availability
             }
+
+            function populateFormForPromote(staff){
+                var form = document.getElementById('createUpdateForm')
+                form.querySelector('input[name="staffID"]').value = staff.staffID
+                form.querySelector('input[name="staffID"]').disabled=true
+                form.querySelector('input[name="name"]').value = staff.name
+                form.querySelector('input[name="name"]').disabled=true
+                form.querySelector('select[name="role"]').value = staff.role 
+                form.querySelector('input[name="expertise"]').value = staff.expertise
+                form.querySelector('input[name="expertise"]').disabled=true
+				form.querySelector('input[name="availability"]').value = staff.availability
+                form.querySelector('input[name="availability"]').disabled=true
+            }
+
             function clearForm() {
                     var form = document.getElementById('createUpdateForm')
 
@@ -104,9 +189,13 @@
                     form.querySelector('input[name="staffID"]').disabled = false
 
                     form.querySelector('input[name="name"]').value = ''
-                    form.querySelector('input[name="role"]').value = ''
+                    form.querySelector('input[name="name"]').disabled = false
+                    form.querySelector('select[name="role"]').value = ''
+                    form.querySelector('select[name="role"]').disabled = false
                     form.querySelector('input[name="expertise"]').value = ''
+                    form.querySelector('input[name="expertise"]').disabled = false
 					form.querySelector('input[name="availability"]').value = ''
+                    form.querySelector('input[name="availability"]').disabled = false
                 }
 
             function doCreate(){
@@ -137,6 +226,7 @@
                 updateServer(staff)
                 
             }
+
             function updateServer(staff){
                $.ajax({
                     url: host+"/staff/"+staff.staffID,
@@ -188,7 +278,7 @@
                 var staff = {}
                 staff.staffID = form.querySelector('input[name="staffID"]').value
                 staff.name = form.querySelector('input[name="name"]').value
-                staff.role = form.querySelector('input[name="role"]').value
+                staff.role = form.querySelector('select[name="role"]').value
                 staff.expertise = form.querySelector('input[name="expertise"]').value
 				staff.availability = form.querySelector('input[name="availability"]').value
                 //console.log(staff)
@@ -234,9 +324,11 @@
 				cell5 = rowElem.insertCell(4)
                 cell5.innerHTML = staff.availability
                 cell6 = rowElem.insertCell(5)
-                cell6.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+                cell6.innerHTML = '<button onclick="showUpdate(this)">Book</button>'
                 cell7 = rowElem.insertCell(6)
                 cell7.innerHTML = '<button onclick="doDelete(this)">Delete</button>'
+                cell8 = rowElem.insertCell(7)
+                cell8.innerHTML = '<button onclick="showPromote(this)">Promote</button>'
                  }
             populateTable()
         </script>

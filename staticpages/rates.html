@@ -1,12 +1,28 @@
 <html>
     <head>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-            
+            <style>a {
+                padding: 1em 1.5em;
+                text-transform: uppercase;
+                margin-top:10px;
+                margin-bottom:10px;
+                margin-right:15px; 
+                margin-left:8px;
+              }
+              button{
+                padding: 0.5em 0.5em;
+              }
+            </style>            
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
                 integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     </head>
     <body>
+        <div align="middle">
+            <a href="index.html">Home</a>
+            <a href="resources.html">Resources</a>
+            <a href="rates.html">Rates</a>
+        </div>
         <div id="create-update" style="display:none">
             <h2>Calculate Costs</h2>
             <table id="createUpdateForm">
@@ -33,15 +49,20 @@
 
         <div id="display">
             <h2>Staff Rates</h2>
-            <button onClick="showCalculate()">Calculate</button>
+            <br>
+            <h6>See below for the hourly rates at each level!</h6>
             <br>
             <table id="costingTable" class="table">
                 <tr>
                     <th>Role</th><th>Rate</th>
                 </tr>    
             </table>
+            <br>
+            <h6>Want to know the total cost?</h6>
+            <br>
+            <button onClick="showCalculate()">Calculate</button>
         </div> 
-
+        <br>
         <div id="calculated-cost"><p></p></div>
 
         <script>
