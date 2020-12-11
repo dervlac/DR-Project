@@ -3,36 +3,36 @@ from OfficeDao import officeDao
 
 app = Flask(__name__,static_url_path = '',static_folder = 'staticpages')
 
+# root will just redirect to index.html static page
 @app.route('/')
 def home():
     return app.send_static_file('index.html')
 
+# returns all staff in the database
 @app.route('/staff')
 def getAll():
     return jsonify(officeDao.getAll())
 
+# returns all the costing rates in the database
 @app.route('/costing')
 def getAllCosting():
     return jsonify(officeDao.getAllCosting())
 
+# returns the costing for a specific role
 @app.route('/costing/<role>')
 def findByRole(role):
     return jsonify(officeDao.findByRole(role))
 
+# returns staff details for a specific staff member
 @app.route('/staff/<int:staffID>')
 def findById(staffID):
     return jsonify(officeDao.findById(staffID))
 
-# create
-# curl -X POST -d "{\"Title\":\"test\", \"Author\":\"some guy\", \"Price\":123}" http://127.0.0.1:5000/staff
-
-
+# creates a new staff member
 @app.route('/staff', methods=['POST'])
 def create():
-   
     if not request.json:
         abort(400)
-
     staff = {
         "staffID": request.json["staffID"],
         "name": request.json["name"],
@@ -42,12 +42,7 @@ def create():
     }
     return jsonify(officeDao.createStaff(staff))
 
-    #return "served by Create "
-
-#update
-# curl -X PUT -d "{\"Title\":\"new Title\", \"Price\":999}" -H "content-type:application/json" http://127.0.0.1:5000/staff/101
-
-
+# updates an existing staff member
 @app.route('/staff/<int:staffID>', methods=['PUT'])
 def update(staffID):
     foundStaff=officeDao.findById(staffID)
@@ -64,23 +59,20 @@ def update(staffID):
     if 'availability' in request.json:
         currentStaff['availability'] = request.json['availability']
     officeDao.update(currentStaff)
-
     return jsonify(currentStaff)
 
-#delete
-# curl -X DELETE http://127.0.0.1:5000/staff/1
-
-
+# deletes a member of staff
 @app.route('/staff/<int:staffID>', methods=['DELETE'])
 def delete(staffID):
     officeDao.delete(staffID)
-
     return jsonify({"done": True})
 
+#error handling
 @app.errorhandler(404)
 def not_found404(error):
     return make_response( jsonify( {'error':'Not found' }), 404)
 
+#error handling
 @app.errorhandler(400)
 def not_found400(error):
     return make_response( jsonify( {'error':'Bad Request' }), 400)

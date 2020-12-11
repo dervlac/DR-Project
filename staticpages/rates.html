@@ -23,6 +23,7 @@
             <a href="resources.html">Resources</a>
             <a href="rates.html">Rates</a>
         </div>
+        <!--create-update div is not initially visible, appears after certain button clicks-->
         <div id="create-update" style="display:none">
             <h2>Calculate Costs</h2>
             <table id="createUpdateForm">
@@ -52,6 +53,7 @@
             <br>
             <h6>See below for the hourly rates at each level!</h6>
             <br>
+            <!--only headers are hard-coded, other rows are populated by function-->
             <table id="costingTable" class="table">
                 <tr>
                     <th>Role</th><th>Rate</th>
@@ -69,12 +71,14 @@
 
             host=window.location.origin
 
+            // function to hide the table and show the form
             function showCalculate(){
                 document.getElementById('display').style.display = "none"
                 document.getElementById('calculate-button').style.display = "block"
                 document.getElementById('create-update').style.display = "block"
             }
-             
+
+            //uses the database value and user input to calculate the total cost and display to user 
             function doCalculate(rate){
                         var cost = getRateFromForm();
                         var total = cost.hours * result;
@@ -83,8 +87,9 @@
                         console.log(total)
                         document.getElementById("calculated-cost").innerHTML = "The cost would be " + total;
             }
+
+            //ajax call to pull rate which corresponds to selected role
             function getRate(){
-                //console.log("in doCreate")
                 cost = getRateFromForm()
                 console.log(cost)
                 $.ajax({
@@ -98,13 +103,12 @@
                    error:function (xhr,status,error){
                        console.log ("error "+error +" code:"+status)
                    }
-                })
-               
+                })  
             }
 
+            // pulls the role and the number of hours input from the form
             function getRateFromForm(){
                 var form = document.getElementById('createUpdateForm')
-
                 var cost = {}
                 cost.role = document.getElementById("selected-role").value
                 cost.hours = Number(form.querySelector('input[name="hours"]').value)
@@ -112,8 +116,8 @@
                 return cost
             }
 
+            //ajax call to pull costing info from database to add to table
             function populateTable(){
-                //ajax getAll
                $.ajax({
                    url:host+'/costing',
                    method:'GET',
@@ -129,8 +133,8 @@
                }) 
             }
 
+            //adds the costing info from the ajax call to the table
             function addCostingToTable(costing){
-                //console.log("working so far")
                 tableElem = document.getElementById("costingTable")
                 rowElem = tableElem.insertRow(-1)
                 rowElem.setAttribute("id", costing.role)
